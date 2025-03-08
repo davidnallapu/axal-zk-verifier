@@ -20,6 +20,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## How to build the circuit
+
+```bash
+cd circuits
+circom price_discrepancy.circom --r1cs --wasm --sym -o build
+```
+This should generate the `price_discrepancy.r1cs`, `price_discrepancy.wasm`, and `price_discrepancy.sym` files in the `build` directory.
+
+## Build Issues
+
+If you encounter any issues during the build process or running the circuit:
+1. Uninstall circom with npm
+2. Reinstall Circom using Rust’s package manager: cargo install --git https://github.com/iden3/circom.git
+3. Check circom --version
+4. If that doesn't work: export PATH="$HOME/.cargo/bin:$PATH"
+ 
+Note: npm seems to install an old version of circom
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
