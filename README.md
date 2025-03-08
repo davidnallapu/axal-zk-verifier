@@ -28,6 +28,13 @@ circom price_discrepancy.circom --r1cs --wasm --sym -o build
 ```
 This should generate the `price_discrepancy.r1cs`, `price_discrepancy.wasm`, and `price_discrepancy.sym` files in the `build` directory.
 
+After that, you need to generate the proving key:
+```bash
+npx snarkjs plonk setup build/price_discrepancy.r1cs ptau/powersOfTau28_hez_final_08.ptau build/proving_key.zkey
+```
+Make sure snarkjs is installed.
+
+
 ## Build Issues
 
 If you encounter any issues during the build process or running the circuit:
