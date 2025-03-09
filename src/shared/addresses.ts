@@ -1,3 +1,3 @@
 export const Addresses = {
-    SIMPLE_MULTIPLIER_ADDR: "0x55eF828d48D95757Dc0A9307DdcE345D3ADdac4D" as `0x${string}`,
+    PRICE_DISCREPANCY_ADDR: "0xE5c7B3ec29dAC16Ce1B1d7911636a1265fC06E62" as `0x${string}`,
   }

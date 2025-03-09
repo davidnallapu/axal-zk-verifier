@@ -34,6 +34,10 @@ npx snarkjs plonk setup build/price_discrepancy.r1cs ptau/powersOfTau28_hez_fina
 ```
 Make sure snarkjs is installed.
 
+Generate the solidity verifier:
+```bash
+npx snarkjs zkey export solidityverifier circuits/build/proving_key.zkey contracts/src/PlonkVerifier.sol
+```
 
 ## Build Issues
 

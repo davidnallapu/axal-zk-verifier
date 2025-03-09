@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev --turbopack",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -13,6 +13,8 @@
     "@mantine/core": "^7.17.1",
     "@mantine/hooks": "^7.17.1",
     "@mantine/notifications": "^7.17.1",
+    "@tanstack/react-query": "^5.67.2",
+    "@wagmi/core": "^2.16.5",
     "axios": "^1.8.2",
     "circomlib": "^2.0.5",
     "ethers": "^5",
@@ -20,6 +22,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "snarkjs": "^0.7.5",
+    "viem": "^2.23.8",
     "wagmi": "^2.14.12"
   },
   "devDependencies": {
@@ -30,7 +33,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.0.12",
     "typescript": "^5"
   }
 }
