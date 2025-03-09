@@ -30,6 +30,9 @@ export default function Home() {
     transport: http()
   });
 
+  // Add state to control when to show connect button
+  const [showConnectButton, setShowConnectButton] = useState(false);
+
   // Wrap fetchPoolData with useCallback
   const fetchPoolData = useCallback(async () => {
     try {
@@ -119,10 +122,13 @@ export default function Home() {
   }, [mainnetClient, baseClient]);
 
   useEffect(() => {
-    // Remove the interval setup
-    // const interval = setInterval(fetchPoolData, 300000);
-    // return () => clearInterval(interval);
-  }, [fetchPoolData]);
+    // Set showConnectButton to true after a short delay
+    const timer = setTimeout(() => {
+      setShowConnectButton(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleGenerateProofSendTransaction = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -193,9 +199,9 @@ export default function Home() {
     }
   }
 
-  // Only allow submit if the user first connects their wallet
+  // Modify the renderSubmitButton function
   const renderSubmitButton = () => {
-    if (!isConnected) {
+    if (!isConnected && showConnectButton) {
       return <ConnectWalletButton />
     }
     
@@ -206,6 +212,7 @@ export default function Home() {
     
     return (
       <Button 
+        // style={{ display: 'block', visibility: 'visible', opacity: 1 }} 
         type="submit" 
         size="md" 
         variant="filled"
@@ -229,8 +236,8 @@ export default function Home() {
       <Container size="md">
         <Paper shadow="sm" radius="md" p="xl" withBorder>
           <Group justify="space-between" mb="lg" pb="md" style={{ borderBottom: '1px solid #eee' }}>
-            <Title order={2}>Uniswap Price Discrepancy Prover</Title>
-            <ConnectWalletButton />
+            <Title order={2} c="dark">Uniswap Price Discrepancy Prover</Title>
+            {showConnectButton && <ConnectWalletButton />}
           </Group>
 
           <Text c="dimmed" size="sm" mb="xl">
