@@ -1,7 +1,7 @@
 "use client";
 
 import '@/styles/globals.css'
-
+import { ethers } from 'ethers';
 import { Container, Paper, Title, Text, TextInput, Button, Stack, Group, Box } from '@mantine/core';
 import { useState, FormEvent, useEffect, useCallback } from 'react';
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
@@ -153,8 +153,19 @@ export default function Home() {
       console.log("Got the proof as calldata. Going to submit transaction...", proof);
       console.log("Got the public signals as calldata, Going to submit transaction... ", publicSignals);
 
+      // Ensure that the window.ethereum provider is available (e.g. MetaMask)
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("No Ethereum wallet found. Please install MetaMask or similar wallet.");
+      }
+
+      // Create a Web3 provider using the injected wallet
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // Request account access if needed
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+
       // Write the transaction
-      const txResult = await executeTransaction(proof, publicSignals);
+      const txResult = await executeTransaction(proof, publicSignals, signer);
       const txHash = txResult.transactionHash;
 
       console.log("Transaction submitted successfully! Tx Hash: ", txHash);

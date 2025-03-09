@@ -1,21 +1,10 @@
 import { Addresses } from '@/shared/addresses';
-import { ethers } from 'ethers';
 import abiPath from './abi/PriceDiscrepancy.json';
-
+import { ethers } from 'ethers';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const executeTransaction = async (proof: any, publicSignals: Array<string>): Promise<any> => {
+export const executeTransaction = async (proof: any, publicSignals: Array<string>, signer: any): Promise<any> => {
   try {
-    // Ensure that the window.ethereum provider is available (e.g. MetaMask)
-    if (typeof window === "undefined" || !window.ethereum) {
-      throw new Error("No Ethereum wallet found. Please install MetaMask or similar wallet.");
-    }
-
-    // Create a Web3 provider using the injected wallet
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // Request account access if needed
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
 
     console.log("formattedPublicSignals", publicSignals);
     console.log("finalProof", proof);
