@@ -21,6 +21,9 @@ export default function Home() {
   const [basePrice, setBasePrice] = useState<string>("");
   const [priceDiff, setPriceDiff] = useState<string>("");
   const [threshold, setThreshold] = useState("");
+  // Add new state variables for proof and public signals
+  const [proofData, setProofData] = useState<string>("");
+  const [publicSignalsData, setPublicSignalsData] = useState<string>("");
   const { isConnected } = useAccount();
   const SCALING_FACTOR = 1e10;
   // Create public clients for both chains
@@ -160,6 +163,9 @@ export default function Home() {
 
       // Split out the proof and public signals from the response data
       const { proof, publicSignals } = res.data;
+      // Store proof and public signals in state
+      setProofData(JSON.stringify(proof, null, 2));
+      setPublicSignalsData(JSON.stringify(publicSignals, null, 2));
       console.log("Got the proof as calldata. Going to submit transaction...", proof);
       console.log("Got the public signals as calldata, Going to submit transaction... ", publicSignals);
 
@@ -340,6 +346,39 @@ export default function Home() {
                 description={Number(priceDiff) < Number(threshold) ? "Warning: Current price difference is less than threshold" : ""}
                 error={Number(priceDiff) < Number(threshold) ? "Proof will fail - decrease threshold or wait for larger price difference" : ""}
               />
+              {/* Add proof display boxes */}
+              {proofData && (
+                <Paper p="md" withBorder radius="md">
+                  <Title order={4} mb="sm">Generated Proof</Title>
+                  <Text component="pre" style={{ 
+                    overflowX: 'auto', 
+                    whiteSpace: 'pre-wrap',
+                    backgroundColor: '#f8f9fa',
+                    padding: '1rem',
+                    borderRadius: '4px',
+                    fontSize: '0.875rem'
+                  }}>
+                    {proofData}
+                  </Text>
+                </Paper>
+              )}
+              
+              {publicSignalsData && (
+                <Paper p="md" withBorder radius="md">
+                  <Title order={4} mb="sm">Public Signals</Title>
+                  <Text component="pre" style={{ 
+                    overflowX: 'auto', 
+                    whiteSpace: 'pre-wrap',
+                    backgroundColor: '#f8f9fa',
+                    padding: '1rem',
+                    borderRadius: '4px',
+                    fontSize: '0.875rem'
+                  }}>
+                    {publicSignalsData}
+                  </Text>
+                </Paper>
+              )}
+
               {renderSubmitButton()}
               <Button 
                 onClick={handleFetchLatestPrices} 
