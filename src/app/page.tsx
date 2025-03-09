@@ -160,6 +160,13 @@ export default function Home() {
 
       // Create a Web3 provider using the injected wallet
       const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const { chainId } = await provider.getNetwork();
+      if (chainId !== 11155111) {
+        alert("Please switch your wallet network to Ethereum Sepolia.");
+        return;
+      }
+      
+
       // Request account access if needed
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
