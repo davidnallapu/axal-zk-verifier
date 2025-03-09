@@ -38,8 +38,10 @@ template PriceDiscrepancyCheck(nBits) {
     discrepancy_check.in[0] <== abs;
     discrepancy_check.in[1] <== threshold;
 
-    // Step 5: Set the output
+    // Set the output signal to the result of the comparison
     valid <== discrepancy_check.out;
+    
+    valid === 1;
 }
 
 // Main component instantiation
