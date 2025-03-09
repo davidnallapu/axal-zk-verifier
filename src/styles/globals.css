@@ -15,3 +15,27 @@
 @import '@mantine/core/styles/InlineInput.css';
 @import '@mantine/core/styles/Flex.css';
 @import '@mantine/core/styles/FloatingIndicator.css';
+
+/* Add responsive base styles */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+}
+
+/* Ensure inputs are touch-friendly */
+input,
+button {
+  min-height: 44px; /* Minimum touch target size */
+}
+
+/* Prevent horizontal scrolling on mobile */
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}

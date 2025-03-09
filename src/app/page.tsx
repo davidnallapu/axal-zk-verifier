@@ -12,6 +12,10 @@ import { executeTransaction } from '@/lib/executeTransaction';
 import { createPublicClient, http } from 'viem';
 import { mainnet, base } from 'viem/chains';
 
+// Add this constant at the top of the component
+const CONTRACT_ADDRESS = "0xa59B95f0359b6941005DEcC757B517d2F4701f63";
+const BASE_EXPLORER_URL = "https://sepolia.basescan.org";
+
 export default function Home() {
   const [mainnetPrice, setMainnetPrice] = useState<string>("");
   const [basePrice, setBasePrice] = useState<string>("");
@@ -167,8 +171,8 @@ export default function Home() {
       // Create a Web3 provider using the injected wallet
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const { chainId } = await provider.getNetwork();
-      if (chainId !== 11155111) {
-        alert("Please switch your wallet network to Ethereum Sepolia.");
+      if (chainId !== 84532) {
+        alert("Please switch your wallet network to Base Sepolia.");
         return;
       }
       
@@ -184,7 +188,31 @@ export default function Home() {
       console.log("Transaction submitted successfully! Tx Hash: ", txHash);
 
       notifications.show({
-        message: `Transaction succeeded! Tx Hash: ${txHash}`,
+        message: (
+          <Paper p="xs" withBorder radius="sm" style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: '#f8f9fa'
+          }}>
+            <Text size="sm">
+              Transaction succeeded! View on Base Sepolia:{' '}
+              <a 
+                href={`${BASE_EXPLORER_URL}/tx/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ 
+                  color: '#228be6',
+                  textDecoration: 'none',
+                  fontWeight: 500
+                }}
+                className="hover:underline"
+              >
+                {txHash.slice(0, 6)}...{txHash.slice(-4)}
+              </a>
+            </Text>
+          </Paper>
+        ),
         color: "green",
         autoClose: false,
       });
@@ -233,10 +261,28 @@ export default function Home() {
 
   return (
     <Box py="xl" style={{ minHeight: '100vh' }}>
-      <Container size="md">
-        <Paper shadow="sm" radius="md" p="xl" withBorder>
-          <Group justify="space-between" mb="lg" pb="md" style={{ borderBottom: '1px solid #eee' }}>
-            <Title order={2} c="dark">Uniswap Price Discrepancy Prover</Title>
+      <Container size="md" px="xs">
+        <Paper shadow="sm" radius="md" p={{ base: 'sm', sm: 'xl' }} withBorder>
+          <Group justify="space-between" mb="lg" pb="md" style={{ 
+            borderBottom: '1px solid #eee',
+            flexDirection: 'column', // Stack items vertically on mobile
+            alignItems: 'stretch', // Full width items on mobile
+            gap: '1rem'
+          }}>
+            <Title order={2} c="dark" size="h2">
+              Uniswap Price Discrepancy Prover
+            </Title>
+            <Text size="sm">
+              Contract Address:{' '}
+              <a 
+                href={`${BASE_EXPLORER_URL}/address/${CONTRACT_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'blue', textDecoration: 'underline' }}
+              >
+                {CONTRACT_ADDRESS}
+              </a>
+            </Text>
             {showConnectButton && <ConnectWalletButton />}
           </Group>
 
@@ -247,7 +293,7 @@ export default function Home() {
             proving their difference exceeds the threshold.
           </Text>
 
-          <Text c="dimmed" size="xs" mb="xl">
+          <Text c="dimmed" size="xs" mb="xl" style={{ wordBreak: 'break-all' }}>
             Mainnet Pool: 0xE0554a476A092703abdB3Ef35c80e0D76d32939F
             <br />
             Base Pool: 0xd0b53D9277642d899DF5C87A3966A349A798F224
