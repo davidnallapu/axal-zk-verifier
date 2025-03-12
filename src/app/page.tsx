@@ -306,9 +306,22 @@ export default function Home() {
     fetchPoolData();
   };
 
-  const isThresholdMet = isConnected && 
-                       Number(priceDiff) >= Number(threshold) && 
-                       Number(threshold) > 0;
+  // Update the condition check to be more reliable
+  const isThresholdMet = useCallback(() => {
+    const diffNum = Number(priceDiff);
+    const thresholdNum = Number(threshold);
+    
+    // Add console logging to debug
+    console.log('Connection status:', isConnected);
+    console.log('Price difference:', diffNum);
+    console.log('Threshold:', thresholdNum);
+    
+    return isConnected && 
+           !isNaN(diffNum) && 
+           !isNaN(thresholdNum) && 
+           diffNum >= thresholdNum && 
+           thresholdNum > 0;
+  }, [isConnected, priceDiff, threshold]);
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">
@@ -513,8 +526,8 @@ export default function Home() {
                 variant="filled"
                 color="matrix"
                 fullWidth
-                disabled={!isThresholdMet}
-                title={!isThresholdMet ? 'Price difference must be ≥ threshold for a valid proof' : ''}
+                disabled={!isThresholdMet()}
+                title={!isThresholdMet() ? 'Price difference must be ≥ threshold for a valid proof' : ''}
                 className="actionButton matrix-button glow-effect"
               >
                 Generate Proof &amp; Send Transaction
@@ -674,12 +687,14 @@ export default function Home() {
           border: 1px solid #00FF41 !important;
           font-family: 'Courier New', monospace !important;
           caret-color: #00FF41;
+          word-break: break-all;
         }
         
         .terminal-label {
           color: #CCFFDB !important;
           font-family: 'Courier New', monospace !important;
           margin-bottom: 0.3rem;
+          font-size: 14px !important;
         }
         
         .terminal-output {
@@ -703,6 +718,8 @@ export default function Home() {
         .code-text {
           font-family: 'Courier New', monospace !important;
           color: #00FF41 !important;
+          word-break: break-all;
+          overflow-wrap: break-word;
         }
         
         .glow-text {
@@ -728,6 +745,7 @@ export default function Home() {
           letter-spacing: 1px;
           transition: all 0.3s ease !important;
           border: none !important;
+          padding: 12px !important;
         }
         
         .matrix-button:hover:not(:disabled) {
@@ -998,17 +1016,115 @@ export default function Home() {
         /* Responsive adjustments */
         @media (max-width: 768px) {
           .author-card {
-            position: relative;
-            top: 0;
-            right: 0;
-            margin-bottom: 2rem;
-            width: 100%;
+            position: static;
+            margin: 0 auto 20px auto;
+            width: auto;
+            max-width: 250px;
+            padding: 10px;
+          }
+          
+          .author-image-container {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 0.5rem;
           }
           
           .author-social-links {
             flex-direction: row;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
+          }
+          
+          .social-link {
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+          }
+          
+          .contentCard {
+            padding: 1rem !important;
+          }
+          
+          .terminal-header {
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .wallet-button-container {
+            margin-top: 1rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+          }
+          
+          .pool-addresses {
+            word-break: break-all;
+          }
+          
+          /* Make buttons more prominent on mobile */
+          .actionButton {
+            height: 60px !important;
+            margin-top: 25px !important;
+            margin-bottom: 25px !important;
+          }
+          
+          /* Give more space at the bottom for buttons */
+          form {
+            padding-bottom: 30px;
+          }
+          
+          /* Fix text size on mobile */
+          .terminal-label {
+            font-size: 14px !important;
+          }
+          
+          .terminal-input {
+            font-size: 14px !important;
+          }
+        }
+        
+        /* Fix for mobile buttons */
+        .matrix-button:active {
+          transform: scale(0.98);
+          background-color: #00D938 !important;
+        }
+        
+        /* Ensure button is visibly enabled/disabled */
+        .matrix-button:disabled {
+          opacity: 0.5 !important;
+          background-color: rgba(0, 178, 46, 0.5) !important;
+          color: rgba(0, 0, 0, 0.7) !important;
+        }
+        
+        .matrix-button:not(:disabled) {
+          opacity: 1 !important;
+          cursor: pointer !important;
+        }
+        
+        /* Mobile fixes */
+        @media (max-width: 768px) {
+          /* Make wallet connection more prominent */
+          .wallet-button-container {
+            margin: 20px auto;
+            width: 100%;
+          }
+          
+          /* Improve button tap targets for mobile */
+          .actionButton {
+            height: 60px !important;
+            margin-top: 25px !important;
+            margin-bottom: 25px !important;
+            -webkit-tap-highlight-color: rgba(0, 255, 65, 0.3) !important;
+          }
+          
+          /* Fix top spacing */
+          .contentCard {
+            margin-top: 20px !important;
+          }
+          
+          /* Make sure the form is properly spaced */
+          form {
+            padding-bottom: 50px;
           }
         }
       `}</style>
