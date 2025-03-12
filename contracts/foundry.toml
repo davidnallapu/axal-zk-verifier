@@ -7,7 +7,7 @@ libs = ["lib"]
 
 # Add this 
 [rpc_endpoints]
-sepolia = "${SEPOLIA_RPC_URL}"
+base-sepolia = "${BASE_SEPOLIA_RPC_URL}"
 
 [etherscan]
-sepolia = { key = "${ETHERSCAN_API_KEY}" } 
+base-sepolia = { key = "${BASESCAN_API_KEY}" } 
