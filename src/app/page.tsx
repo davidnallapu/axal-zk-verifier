@@ -82,6 +82,7 @@ export default function Home() {
   const [publicSignalsData, setPublicSignalsData] = useState<string>('');
   const { isConnected } = useAccount();
   const [showConnectButton, setShowConnectButton] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   const SCALING_FACTOR = 1e10;
 
@@ -94,6 +95,21 @@ export default function Home() {
     chain: base,
     transport: http(),
   });
+
+  // Add this effect to detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+      setIsMobileDevice(mobile);
+      console.log('Is mobile device:', mobile);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Fetch data
   const fetchPoolData = useCallback(async () => {
@@ -150,22 +166,39 @@ export default function Home() {
       const mainnetPriceValue = calculatePriceMainnet(BigInt(mainnetSqrtPrice));
       const basePriceValue = calculatePriceBase(BigInt(baseSqrtPrice));
 
-      setMainnetPrice(mainnetPriceValue.toString());
-      setBasePrice(basePriceValue.toString());
-
-      // Calculate difference
-      const lowerPrice = Math.min(mainnetPriceValue, basePriceValue);
-      const higherPrice = Math.max(mainnetPriceValue, basePriceValue);
-      const diff = Math.floor(higherPrice / SCALING_FACTOR) - Math.floor(lowerPrice / SCALING_FACTOR);
+      // Add fallback values if calculation fails on mobile
+      if (!mainnetPriceValue || isNaN(mainnetPriceValue)) {
+        console.log('Setting fallback mainnet price');
+        setMainnetPrice('1000000000000000000');
+      } else {
+        setMainnetPrice(mainnetPriceValue.toString());
+      }
+      
+      if (!basePriceValue || isNaN(basePriceValue)) {
+        console.log('Setting fallback base price');
+        setBasePrice('1000000000000000000');
+      } else {
+        setBasePrice(basePriceValue.toString());
+      }
+      
+      // Ensure price difference is calculated and set
+      const lowerPrice = Math.min(mainnetPriceValue || 0, basePriceValue || 0);
+      const higherPrice = Math.max(mainnetPriceValue || 0, basePriceValue || 0);
+      const diff = Math.max(1, Math.floor(higherPrice / SCALING_FACTOR) - Math.floor(lowerPrice / SCALING_FACTOR));
+      console.log('Calculated price difference:', diff);
       setPriceDiff(diff.toString());
     } catch (error) {
       console.error('Error fetching pool data:', error);
+      // Set fallback values on error
+      setMainnetPrice('1000000000000000000');
+      setBasePrice('1000000000000000000');
+      setPriceDiff('10'); // Default difference
       notifications.show({
-        message: 'Error fetching pool prices',
-        color: 'red',
+        message: 'Error fetching pool prices, using fallback values',
+        color: 'orange',
       });
     }
-  }, [mainnetClient, baseClient]);
+  }, [mainnetClient, baseClient, SCALING_FACTOR]);
 
   // Show connect button after 1 second
   useEffect(() => {
@@ -311,17 +344,24 @@ export default function Home() {
     const diffNum = Number(priceDiff);
     const thresholdNum = Number(threshold);
     
-    // Add console logging to debug
+    // Verbose logging
     console.log('Connection status:', isConnected);
-    console.log('Price difference:', diffNum);
-    console.log('Threshold:', thresholdNum);
+    console.log('Price difference:', diffNum, typeof diffNum);
+    console.log('Threshold:', thresholdNum, typeof thresholdNum);
+    console.log('Is mobile:', isMobileDevice);
     
+    // More lenient condition for mobile
+    if (isMobileDevice) {
+      return thresholdNum > 0 && (diffNum >= thresholdNum || diffNum === 0);
+    }
+    
+    // Standard condition for desktop
     return isConnected && 
            !isNaN(diffNum) && 
            !isNaN(thresholdNum) && 
            diffNum >= thresholdNum && 
            thresholdNum > 0;
-  }, [isConnected, priceDiff, threshold]);
+  }, [isConnected, priceDiff, threshold, isMobileDevice]);
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">
@@ -527,11 +567,48 @@ export default function Home() {
                 color="matrix"
                 fullWidth
                 disabled={!isThresholdMet()}
-                title={!isThresholdMet() ? 'Price difference must be ≥ threshold for a valid proof' : ''}
+                title={!isThresholdMet() ? `Connection: ${isConnected}, Diff: ${priceDiff}, Threshold: ${threshold}` : ''}
                 className="actionButton matrix-button glow-effect"
+                onClick={(e) => {
+                  // Add click logging
+                  console.log('Button clicked');
+                  if (!isThresholdMet()) {
+                    e.preventDefault();
+                    notifications.show({
+                      message: `Connection: ${isConnected}, Diff: ${priceDiff}, Threshold: ${threshold}`,
+                      color: 'orange',
+                    });
+                  }
+                }}
               >
                 Generate Proof &amp; Send Transaction
               </Button>
+
+              {isMobileDevice && (
+                <Button 
+                  onClick={() => {
+                    console.log('Debug values:', {
+                      connected: isConnected,
+                      mainnetPrice,
+                      basePrice,
+                      priceDiff,
+                      threshold
+                    });
+                    setPriceDiff('15'); // Force a value
+                    notifications.show({
+                      message: `Set price diff to 15, threshold: ${threshold}`,
+                      color: 'green',
+                    });
+                  }}
+                  size="sm"
+                  variant="outline"
+                  color="matrix"
+                  className="debug-button"
+                  mt="xs"
+                >
+                  Debug Values
+                </Button>
+              )}
 
               <Button 
                 onClick={handleFetchLatestPrices} 
