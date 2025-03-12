@@ -1,5 +1,5 @@
 import { Addresses } from '@/shared/addresses';
-import abiPath from './abi/PriceDiscrepancy.json';
+import abiPath from './abi/PriceDiscrepancyV1.json';
 import { ethers } from 'ethers';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -8,11 +8,11 @@ export const executeTransaction = async (proof: any, publicSignals: Array<string
 
     console.log("formattedPublicSignals", publicSignals);
     console.log("finalProof", proof);
-    console.log("Contract Address:", Addresses.PRICE_DISCREPANCY_ADDR);
+    console.log("Contract Address:", Addresses.PRICE_DISCREPANCY_PROXY_ADDR);
 
 
     // Create a contract instance with the signer (the connected wallet)
-    const contract = new ethers.Contract(Addresses.PRICE_DISCREPANCY_ADDR, abiPath.abi, signer);
+    const contract = new ethers.Contract(Addresses.PRICE_DISCREPANCY_PROXY_ADDR, abiPath.abi, signer);
 
     // Convert string array to BigNumber array for uint256 compatibility
     const formattedPublicSignals = publicSignals.map(signal => {

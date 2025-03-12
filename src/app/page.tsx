@@ -11,9 +11,9 @@ import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 import { executeTransaction } from '@/lib/executeTransaction';
 import { createPublicClient, http } from 'viem';
 import { mainnet, base } from 'viem/chains';
+import { Addresses } from '@/shared/addresses';
 
 // Add this constant at the top of the component
-const CONTRACT_ADDRESS = "0xa59B95f0359b6941005DEcC757B517d2F4701f63";
 const BASE_EXPLORER_URL = "https://sepolia.basescan.org";
 
 export default function Home() {
@@ -281,12 +281,45 @@ export default function Home() {
             <Text size="sm">
               Contract Address:{' '}
               <a 
-                href={`${BASE_EXPLORER_URL}/address/${CONTRACT_ADDRESS}`}
+                href={`${BASE_EXPLORER_URL}/address/${Addresses.PRICE_DISCREPANCY_PROXY_ADDR}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: 'blue', textDecoration: 'underline' }}
               >
-                {CONTRACT_ADDRESS}
+                {Addresses.PRICE_DISCREPANCY_PROXY_ADDR}
+              </a>
+            </Text>
+            <Text size="sm">
+              Implementation Address:{' '}
+              <a 
+                href={`${BASE_EXPLORER_URL}/address/${Addresses.PRICE_DISCREPANCY_IMPLEMENTATION_ADDR}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'blue', textDecoration: 'underline' }}
+              >
+                {Addresses.PRICE_DISCREPANCY_IMPLEMENTATION_ADDR}
+              </a>
+            </Text>
+            <Text size="sm">
+              Verifier Address:{' '}
+              <a 
+                href={`${BASE_EXPLORER_URL}/address/${Addresses.PLONK_VERIFIER_ADDR}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'blue', textDecoration: 'underline' }}
+              >
+                {Addresses.PLONK_VERIFIER_ADDR}
+              </a>
+            </Text>
+            <Text size="sm">
+              Deployer Address:{' '}
+              <a 
+                href={`${BASE_EXPLORER_URL}/address/${Addresses.PRICE_DISCREPANCY_DEPLOYER_ADDR}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'blue', textDecoration: 'underline' }}
+              >
+                {Addresses.PRICE_DISCREPANCY_DEPLOYER_ADDR}
               </a>
             </Text>
             {showConnectButton && <ConnectWalletButton />}
