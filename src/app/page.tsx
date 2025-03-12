@@ -606,7 +606,6 @@ export default function Home() {
                   className="debug-button"
                   mt="xs"
                 >
-                  Debug Values
                 </Button>
               )}
 
