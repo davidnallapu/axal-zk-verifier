@@ -524,7 +524,7 @@ export default function Home() {
                 }}
               />
               <TextInput
-                label="Price Difference Threshold(Threshold must be ≥ price difference)"
+                label="Price Difference Threshold(Threshold must be ≤ price difference)"
                 placeholder="Enter threshold value"
                 value={threshold}
                 onChange={(e) => setThreshold(e.currentTarget.value)}
