@@ -20,8 +20,8 @@ export const generateProof = async (price1: number, price2: number, threshold: n
   console.log(`generateProof/Scaled inputs: `, inputs);
 
   // Paths to the .wasm file and proving key
-  const wasmPath = path.join(process.cwd(), 'circuits/build/price_discrepancy_js/price_discrepancy.wasm');
-  const provingKeyPath = path.join(process.cwd(), 'circuits/build/proving_key.zkey')
+  const wasmPath = path.join(process.cwd(), 'circuits/circom/build/price_discrepancy_js/price_discrepancy.wasm');
+  const provingKeyPath = path.join(process.cwd(), 'circuits/circombuild/proving_key.zkey')
 
   try {
     console.log("generateProof/Generating proof...");
