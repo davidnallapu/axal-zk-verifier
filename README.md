@@ -101,6 +101,79 @@ To upgrade the contract:
 - The implementation contract should never be used directly, always interact through the proxy
 - Storage layout must be carefully preserved in new implementation versions
 
+## Testing the SP1 Code
+
+This project includes succinct SP1 code that can be tested using the following steps. Note that generating a proof can take a significant amount of time, but you can test the execution by running the command below.
+
+### How to Test
+
+Navigate to the `circuits/sp1/uniswap/host` directory and run the following command:
+
+```bash
+RUST_LOG=info cargo run --release
+```
+
+This command will execute the SP1 code, allowing you to test its functionality without generating a proof. Ensure that you have all necessary dependencies installed and configured before running the command.
+
+### Using Succinct's Prover Network
+
+For generating proofs, I recommend using [Succinct's Prover Network](https://succinct.xyz) due to its efficiency in handling computationally intensive tasks. This network can significantly reduce the time and resources required for proof generation, making it ideal for complex circuits like the ones used in this project.
+
+### Sample Output from the SP1 Code
+
+```bash
+#!/bin/bash
+
+echo "Running \`/home/david/Documents/GitHub/axal/zk-verifier/zk-verifier/circuits/sp1/target/release/uniswap\`"
+echo "2025-03-18T16:47:37.702870Z  INFO fetching account info for address: 0x0000000000000000000000000000000000000000"
+echo "2025-03-18T16:47:37.833125Z  INFO fetching account info for address: 0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640"
+echo "2025-03-18T16:47:37.966671Z  INFO fetching storage value at address: 0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640, index: 0"
+echo "2025-03-18T16:47:38.012601Z  INFO fetching account info for address: 0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5"
+echo "2025-03-18T16:47:38.137886Z  INFO fetching account info for address: 0x0000000000000000000000000000000000000000"
+echo "2025-03-18T16:47:38.248746Z  INFO fetching account info for address: 0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8"
+echo "2025-03-18T16:47:38.373506Z  INFO fetching storage value at address: 0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8, index: 0"
+echo "2025-03-18T16:47:38.424026Z  INFO fetching account info for address: 0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5"
+echo "2025-03-18T16:47:38.531621Z  INFO fetching storage proofs"
+echo "2025-03-18T16:47:38.829384Z  INFO fetching 0 ancestor headers"
+echo "2025-03-18T16:47:39.753720Z  INFO vk verification: true"
+echo "2025-03-18T16:47:43.123881Z  INFO execute: clk = 0 pc = 0x20c9e8"
+echo "2025-03-18T16:47:43.250189Z  INFO execute: Shard Lifted: Index=0, Cluster=179"
+echo "2025-03-18T16:47:43.250210Z  INFO execute: Chip Cpu: 21  -> 21"
+echo "2025-03-18T16:47:43.250214Z  INFO execute: Chip DivRem: 1   -> 10"
+echo "2025-03-18T16:47:43.250217Z  INFO execute: Chip AddSub: 21  -> 21"
+echo "2025-03-18T16:47:43.250219Z  INFO execute: Chip Bitwise: 18  -> 18"
+echo "2025-03-18T16:47:43.250222Z  INFO execute: Chip Mul: 13  -> 17"
+echo "2025-03-18T16:47:43.250224Z  INFO execute: Chip ShiftRight: 15  -> 17"
+echo "2025-03-18T16:47:43.250227Z  INFO execute: Chip ShiftLeft: 17  -> 17"
+echo "2025-03-18T16:47:43.250229Z  INFO execute: Chip Lt: 20  -> 20"
+echo "2025-03-18T16:47:43.250232Z  INFO execute: Chip MemoryInstrs: 20  -> 20"
+echo "2025-03-18T16:47:43.250234Z  INFO execute: Chip Auipc: 14  -> 18"
+echo "2025-03-18T16:47:43.250237Z  INFO execute: Chip Branch: 19  -> 19"
+echo "2025-03-18T16:47:43.250239Z  INFO execute: Chip Jump: 15  -> 18"
+echo "2025-03-18T16:47:43.250242Z  INFO execute: Chip SyscallInstrs: 9   -> 10"
+echo "2025-03-18T16:47:43.250244Z  INFO execute: Chip MemoryLocal: 15  -> 18"
+echo "2025-03-18T16:47:43.250247Z  INFO execute: Chip Global: 18  -> 18"
+echo "2025-03-18T16:47:43.251546Z  INFO execute: Shard Lifted: Index=1, Cluster=245"
+echo "2025-03-18T16:47:43.251554Z  INFO execute: Chip Cpu: 19  -> 19"
+echo "2025-03-18T16:47:43.251557Z  INFO execute: Chip DivRem: 1   -> 10"
+echo "2025-03-18T16:47:43.251560Z  INFO execute: Chip AddSub: 19  -> 19"
+echo "2025-03-18T16:47:43.251562Z  INFO execute: Chip Bitwise: 15  -> 15"
+echo "2025-03-18T16:47:43.251564Z  INFO execute: Chip Mul: 12  -> 15"
+echo "2025-03-18T16:47:43.251567Z  INFO execute: Chip ShiftRight: 14  -> 15"
+echo "2025-03-18T16:47:43.251569Z  INFO execute: Chip ShiftLeft: 14  -> 15"
+echo "2025-03-18T16:47:43.251572Z  INFO execute: Chip Lt: 17  -> 17"
+echo "2025-03-18T16:47:43.251574Z  INFO execute: Chip MemoryInstrs: 17  -> 17"
+echo "2025-03-18T16:47:43.251577Z  INFO execute: Chip Auipc: 12  -> 16"
+echo "2025-03-18T16:47:43.251579Z  INFO execute: Chip Branch: 16  -> 16"
+echo "2025-03-18T16:47:43.251581Z  INFO execute: Chip Jump: 14  -> 16"
+echo "2025-03-18T16:47:43.251584Z  INFO execute: Chip SyscallInstrs: 7   -> 10"
+echo "2025-03-18T16:47:43.251586Z  INFO execute: Chip MemoryLocal: 13  -> 16"
+echo "2025-03-18T16:47:43.251589Z  INFO execute: Chip Global: 16  -> 16"
+echo "2025-03-18T16:47:43.252104Z  INFO execute: gas: 6047434"
+echo "2025-03-18T16:47:43.254764Z  INFO execute: close time.busy=235ms time.idle=3.71µs"
+echo "executed program with 2408982 cycles"
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -9,10 +9,10 @@ export const generateProof = async (price1: number, price2: number, threshold: n
   
   // Scale down the numbers to fit within 32 bits (2^32 - 1)
   // We'll divide by 1e6 to handle large wei values while preserving 6 decimal places
-  const SCALING_FACTOR = 1e10;
+  const SCALING_FACTOR = 100;
   const inputs = {
-    price1: Math.floor(price1 / SCALING_FACTOR),
-    price2: Math.floor(price2 / SCALING_FACTOR),
+    price1: Math.floor(price1 * SCALING_FACTOR),
+    price2: Math.floor(price2 * SCALING_FACTOR),
     threshold: threshold
   }
 

@@ -23,7 +23,7 @@ import { notifications } from '@mantine/notifications';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 import { executeTransaction } from '@/lib/executeTransaction';
 import { createPublicClient, http } from 'viem';
-import { mainnet, base } from 'viem/chains';
+import { mainnet } from 'viem/chains';
 import { Addresses } from '@/shared/addresses';
 
 const BASE_EXPLORER_URL = 'https://sepolia.basescan.org';
@@ -74,8 +74,8 @@ export default function Home() {
   // const styles = useStyles();
 
   // State
-  const [mainnetPrice, setMainnetPrice] = useState<string>('');
-  const [basePrice, setBasePrice] = useState<string>('');
+  const [mainnet1Price, setMainnetPrice] = useState<string>('');
+  const [mainnet2Price, setMainnet2Price] = useState<string>('');
   const [priceDiff, setPriceDiff] = useState<string>('');
   const [threshold, setThreshold] = useState('');
   const [proofData, setProofData] = useState<string>('');
@@ -84,15 +84,11 @@ export default function Home() {
   const [showConnectButton, setShowConnectButton] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
 
-  const SCALING_FACTOR = 1e10;
+  const SCALING_FACTOR = 100;
 
   // Create public clients for both chains
   const mainnetClient = createPublicClient({
     chain: mainnet,
-    transport: http(),
-  });
-  const baseClient = createPublicClient({
-    chain: base,
     transport: http(),
   });
 
@@ -132,73 +128,77 @@ export default function Home() {
         },
       ];
 
-      const [mainnetSlot0, baseSlot0] = await Promise.all([
+      const [mainnet1Slot0, mainnet2Slot0] = await Promise.all([
         mainnetClient.readContract({
-          address: '0xE0554a476A092703abdB3Ef35c80e0D76d32939F',
+          address: '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640',
           abi,
           functionName: 'slot0',
         }) as Promise<[bigint, number, number, number, number, number, boolean]>,
-        baseClient.readContract({
-          address: '0xd0b53D9277642d899DF5C87A3966A349A798F224',
+        mainnetClient.readContract({
+          address: '0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8',
           abi,
           functionName: 'slot0',
         }) as Promise<[bigint, number, number, number, number, number, boolean]>,
       ]);
 
-      const mainnetSqrtPrice = mainnetSlot0[0];
-      const baseSqrtPrice = baseSlot0[0];
+      const mainnet1SqrtPrice = mainnet1Slot0[0];
+      const mainnet2SqrtPrice = mainnet2Slot0[0];
 
       // 2^96
       const Q96 = BigInt(2) ** BigInt(96);
 
       const calculatePriceMainnet = (sqrtPriceX96: bigint): number => {
-        const sqrtPrice = Number(sqrtPriceX96) / Number(Q96);
-        const rawPrice = sqrtPrice ** 2;
-        return Math.round(rawPrice * 1e-12 * 1e18);
+        // Step 1: Compute the normalized square root price
+        const sqrtPriceNormalized = Number(sqrtPriceX96) / Number(Q96);
+
+        // Step 2: Square the normalized value
+        const rawPrice = sqrtPriceNormalized ** 2;
+
+        // Step 3: Adjust for the token decimals
+        const adjustedPrice = rawPrice * 1e-12;
+
+        // Step 4: Convert to the conventional price (USDC per WETH)
+        const priceUSDCPerWETH = 1 / adjustedPrice;
+
+        return parseFloat(priceUSDCPerWETH.toFixed(2)); // Return the price with two decimal places
       };
 
-      const calculatePriceBase = (sqrtPriceX96: bigint): number => {
-        const sqrtPrice = Number(sqrtPriceX96) / Number(Q96);
-        const rawPrice = sqrtPrice ** 2;
-        return Math.round((1 / (rawPrice * 1e12)) * 1e18);
-      };
-
-      const mainnetPriceValue = calculatePriceMainnet(BigInt(mainnetSqrtPrice));
-      const basePriceValue = calculatePriceBase(BigInt(baseSqrtPrice));
+      const mainnet1PriceValue = calculatePriceMainnet(BigInt(mainnet1SqrtPrice));
+      const mainnet2PriceValue = calculatePriceMainnet(BigInt(mainnet2SqrtPrice));
 
       // Add fallback values if calculation fails on mobile
-      if (!mainnetPriceValue || isNaN(mainnetPriceValue)) {
-        console.log('Setting fallback mainnet price');
+      if (!mainnet1PriceValue || isNaN(mainnet1PriceValue)) {
+        console.log('Setting fallback mainnet1 price');
         setMainnetPrice('1000000000000000000');
       } else {
-        setMainnetPrice(mainnetPriceValue.toString());
+        setMainnetPrice(mainnet1PriceValue.toString());
       }
       
-      if (!basePriceValue || isNaN(basePriceValue)) {
-        console.log('Setting fallback base price');
-        setBasePrice('1000000000000000000');
+      if (!mainnet2PriceValue || isNaN(mainnet2PriceValue)) {
+        console.log('Setting fallback mainnet2 price');
+        setMainnet2Price('1000000000000000000');
       } else {
-        setBasePrice(basePriceValue.toString());
+        setMainnet2Price(mainnet2PriceValue.toString());
       }
       
       // Ensure price difference is calculated and set
-      const lowerPrice = Math.min(mainnetPriceValue || 0, basePriceValue || 0);
-      const higherPrice = Math.max(mainnetPriceValue || 0, basePriceValue || 0);
-      const diff = Math.max(1, Math.floor(higherPrice / SCALING_FACTOR) - Math.floor(lowerPrice / SCALING_FACTOR));
+      const lowerPrice = Math.min(mainnet1PriceValue || 0, mainnet2PriceValue || 0);
+      const higherPrice = Math.max(mainnet1PriceValue || 0, mainnet2PriceValue || 0);
+      const diff = Math.max(1, Math.floor(higherPrice * SCALING_FACTOR) - Math.floor(lowerPrice * SCALING_FACTOR));
       console.log('Calculated price difference:', diff);
       setPriceDiff(diff.toString());
     } catch (error) {
       console.error('Error fetching pool data:', error);
       // Set fallback values on error
       setMainnetPrice('1000000000000000000');
-      setBasePrice('1000000000000000000');
+      setMainnet2Price('1000000000000000000');
       setPriceDiff('10'); // Default difference
       notifications.show({
         message: 'Error fetching pool prices, using fallback values',
         color: 'orange',
       });
     }
-  }, [mainnetClient, baseClient, SCALING_FACTOR]);
+  }, [mainnetClient, SCALING_FACTOR]);
 
   // Show connect button after 1 second
   useEffect(() => {
@@ -214,8 +214,8 @@ export default function Home() {
     e.preventDefault();
 
     const data = {
-      price1: mainnetPrice,
-      price2: basePrice,
+      price1: mainnet1Price,
+      price2: mainnet2Price,
       threshold: threshold,
     };
     const config: AxiosRequestConfig = {
@@ -376,7 +376,7 @@ export default function Home() {
           <div className="hero-text-container">
             <Title className="heroTitle glow-text">Uniswap Price Discrepancy Prover</Title>
             <Text size="lg" className="heroSubtitle matrix-text">
-              Seamlessly prove a price gap between USDC pools on Mainnet and Base. 
+              Seamlessly prove a price gap between two USDC pools on Mainnet. 
               Keep actual prices private—only submit a zero-knowledge proof.
             </Text>
           </div>
@@ -466,8 +466,8 @@ export default function Home() {
           </Group>
 
           <Text color="dimmed" size="sm" mb="xl" className="code-text pool-addresses">
-            Mainnet Pool: 0xE0554a476A092703abdB3Ef35c80e0D76d32939F <br />
-            Base Pool: 0xd0b53D9277642d899DF5C87A3966A349A798F224
+            Mainnet Pool: 0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640 <br />
+            Base Pool: 0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8
           </Text>
 
           {/* Form */}
@@ -475,7 +475,7 @@ export default function Home() {
             <Stack gap="md">
               <TextInput
                 label="Mainnet USDC Pool Price (wei)"
-                value={mainnetPrice}
+                value={mainnet1Price}
                 readOnly
                 radius="md"
                 classNames={{ 
@@ -485,7 +485,7 @@ export default function Home() {
               />
               <TextInput
                 label="Mainnet USDC Pool Price (scaled)"
-                value={Math.floor(Number(mainnetPrice) / SCALING_FACTOR)}
+                value={Math.floor(Number(mainnet1Price) * SCALING_FACTOR)}
                 readOnly
                 radius="md"
                 classNames={{ 
@@ -495,7 +495,7 @@ export default function Home() {
               />
               <TextInput
                 label="Base USDC Pool Price (wei)"
-                value={basePrice}
+                value={mainnet2Price}
                 readOnly
                 radius="md"
                 classNames={{ 
@@ -505,7 +505,7 @@ export default function Home() {
               />
               <TextInput
                 label="Base USDC Pool Price (scaled)"
-                value={Math.floor(Number(basePrice) / SCALING_FACTOR)}
+                value={Math.floor(Number(mainnet2Price) * SCALING_FACTOR)}
                 readOnly
                 radius="md"
                 classNames={{ 
@@ -514,7 +514,7 @@ export default function Home() {
                 }}
               />
               <TextInput 
-                label="Price Difference" 
+                label="Price Difference in cents" 
                 value={priceDiff} 
                 readOnly 
                 radius="md" 
@@ -589,8 +589,8 @@ export default function Home() {
                   onClick={() => {
                     console.log('Debug values:', {
                       connected: isConnected,
-                      mainnetPrice,
-                      basePrice,
+                      mainnet1Price,
+                      mainnet2Price,
                       priceDiff,
                       threshold
                     });
