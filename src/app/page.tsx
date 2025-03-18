@@ -474,7 +474,7 @@ export default function Home() {
           <form onSubmit={handleGenerateProofSendTransaction}>
             <Stack gap="md">
               <TextInput
-                label="Mainnet USDC Pool Price (wei)"
+                label="Mainnet USDC Pool Price (in dollars)"
                 value={mainnet1Price}
                 readOnly
                 radius="md"
@@ -484,7 +484,7 @@ export default function Home() {
                 }}
               />
               <TextInput
-                label="Mainnet USDC Pool Price (scaled)"
+                label="Mainnet USDC Pool Price (in cents)"
                 value={Math.floor(Number(mainnet1Price) * SCALING_FACTOR)}
                 readOnly
                 radius="md"
@@ -494,7 +494,7 @@ export default function Home() {
                 }}
               />
               <TextInput
-                label="Base USDC Pool Price (wei)"
+                label="Base USDC Pool Price (in dollars)"
                 value={mainnet2Price}
                 readOnly
                 radius="md"
@@ -504,7 +504,7 @@ export default function Home() {
                 }}
               />
               <TextInput
-                label="Base USDC Pool Price (scaled)"
+                label="Base USDC Pool Price (in cents)"
                 value={Math.floor(Number(mainnet2Price) * SCALING_FACTOR)}
                 readOnly
                 radius="md"
