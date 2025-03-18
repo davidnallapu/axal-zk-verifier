@@ -1,0 +1,19 @@
+[package]
+name = "uniswap-client"
+description = ""
+edition = "2021"
+
+[dependencies]
+# workspace
+sp1-cc-client-executor.workspace = true
+
+# alloy
+alloy-primitives = { version = "0.8" }
+alloy-sol-types = { version = "0.8" }
+alloy-sol-macro = { version = "0.8" }
+
+# sp1
+sp1-zkvm = "4.0.0"
+
+# misc
+bincode = "1.3.3"
