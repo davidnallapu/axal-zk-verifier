@@ -107,7 +107,7 @@ This project includes succinct SP1 code that can be tested using the following s
 
 ### How to Test
 
-Navigate to the `circuits/sp1/uniswap/host` directory and run the following command:
+Navigate to the `circuits/sp1Code/uniswap/host` directory and run the following command:
 
 ```bash
 RUST_LOG=info cargo run --release
